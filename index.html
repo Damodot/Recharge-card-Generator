@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/js/bootstrap.bundle.js">
+    <title>Recharge Card</title>
+    <style>
+        main{
+            width: 400px;
+        }
+        .selector{
+            width: 48%;
+            aspect-ratio: 1 / 0.2;
+            font-weight: 700;
+        }
+        .selector:hover{
+            border-color: rgb(153, 153, 153);
+        }
+        .selector:focus{
+            border-color: #007bff;
+            box-shadow: 0 0 4px rgb(0, 123, 255);
+        }
+        option{
+            color: rgb(4, 2, 2);
+            background-color: white;
+        }
+        table, tbody, thead, th, td, tr{
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="m-auto p-3 rounded shadow">
+        <h1 class="fw-bold text-primary text-center">Buy Recharge Card</h1>
+        <div class="select d-flex justify-content-between mt-4">
+            <select name="" id="service" class="selector">
+                <option value="">Choose Service</option>
+                <option value="MTN">MTN</option>
+                <option value="GLO">GLO</option>
+                <option value="Airtel">Airtel</option>
+                <option value="9Mobile">9Mobile</option>
+            </select>
+            <select name="" id="amount" class="selector">
+                <option value="">Choose Amount</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="400">400</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+            </select>
+        </div>
+        <button class="btn btn-success mt-4 px-3" onclick="createCard()">Generate</button>
+        <div id="pinGenerated" class="mt-3"></div>
+        <table class="w-100">
+            <thead>
+                <th>SN</th>
+                <th>Provider</th>
+                <th>Amount</th>
+                <th>Used</th>
+                <th>Pin</th>
+            </thead>
+            <tbody class="output"></tbody>
+        </table>               
+    </main>
+</body>
+</html>
+
+
+<script>
+    let provider = document.getElementById('service')
+    let amount = document.getElementById('amount')
+    let pinShow = document.getElementById('pinGenerated')
+    let output = document.querySelector('.output')
+    let database = []
+    let serialNum = 1
+
+
+    let createCard = () => {
+        if (!provider.value || !amount.value) {
+            pinShow.innerHTML = `<h4 class="text-danger">Please Input All Fields</h4>`
+        } else {
+            pinShow.innerHTML = ""
+            let myPin = ''
+            for (let index = 0; index < 12; index++) {
+                let randomNum = Math.floor(Math.random() * 10)
+                myPin = myPin + randomNum
+            }
+            pinShow.innerHTML += `<h4 class="text-success">${myPin}</h4>`
+
+            let cardInfo = 
+                {provider: provider.value,
+                amount: amount.value,
+                used: false,
+                pin: myPin             
+                }
+            console.log(cardInfo);
+            
+            database.push(cardInfo)
+            console.log(database);
+
+            let sepVal = Object.values(database[0])
+            console.log(sepVal);
+            
+         
+            database.forEach((index) => {
+                output.innerHTML += `
+                <tr>
+                    <td>${serialNum++}</td>
+                    <td class="fw-bold">${sepVal[0]}</td>
+                    <td>${sepVal[1]}</td>
+                    <td>${sepVal[2]}</td>
+                    <td>${sepVal[3]}</td>
+                </tr>
+                `
+                database = []
+            })
+        }
+    }
+</script>
