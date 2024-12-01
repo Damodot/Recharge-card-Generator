@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/js/bootstrap.bundle.js">
+    <title>Recharge Card</title>
+    <style>
+        main{
+            width: 60%;
+        }
+        h1{
+            font-size: 40px;
+        } 
+        section button{
+            width: 15%;
+            aspect-ratio: 1 / 1;
+            margin: 0 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }    
+        section img{
+            width: 100%;   
+            aspect-ratio: 1 / 1;
+            z-index: 1;
+        }
+        section button:hover img{
+            transform: scale(1.2);
+            transition: transform 0.4s ease;
+        }
+        h1{
+            color: black;
+        }
+        .custom{
+            background-color: black;
+        }
+        .custom:hover{
+            background-color: black;
+        }
+        .yellow{
+            height: 50px;
+            border-radius: 5px;
+        }
+        .priceBtn button{
+            width: 30%;
+        }
+        .blackBtn{
+            background-color: black;
+        }
+        .blackBtn:hover{
+            background-color: rgb(69, 69, 69);
+        }
+        .butInp{
+            width: 49%;
+        }
+        .reply{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="m-auto rounded p-3 shadow"> 
+        <h1 class="text-center fw-bolder">Recharge Card Generator</h1>
+        <section class="w-100 m-auto d-flex align-items-center justify-content-center position-relative mt-4">
+            <button class="shadow btn btn-warning mtn" onclick="changeMtn()">
+                <img src="MTN Logo - PNG Logo Vector Brand Downloads (SVG, EPS).jpeg" alt="">
+            </button>
+            <button class="shadow btn airtel btn-danger" onclick="changeAirtel()">
+                <img src="Airtel Lottery.jpeg" alt="">
+            </button>
+            <button class="shadow btn glo btn-success" onclick="changeGlo()">
+                <img src="glo logo.png" alt="">
+            </button>
+            <button class="shadow btn nineMobile custom" onclick="changeMobile()">
+                <img src="9mobile Confirms Adrian Wood’s Exit, Completes Handover.png" alt="">
+            </button>
+        </section>
+        <div class="reply w-100 mt-5">
+            <div class="yellow providerColor d-flex justify-content-between">
+                <h3 class="text-white fw-bolder fs-3 ms-4 providerBalance"></h3>
+                <h3 class="text-white fw-bolder fs-3 me-4 providerText"></h3>
+            </div>
+            <div class="priceBtn w-100 mt-4 d-flex flex-wrap justify-content-between">
+                <button class="btn shadow py-3 fw-bolder" onclick="fifty()">50.00</button>
+                <button class="btn shadow py-3 fw-bolder" onclick="hundred()">100.00</button>
+                <button class="btn shadow py-3 fw-bolder" onclick="twoHundred()">200.00</button>
+                <button class="btn shadow py-3 fw-bolder mt-4" onclick="fiveHundred()">500.00</button>
+                <button class="btn shadow py-3 fw-bolder mt-4" onclick="oneThousand()">1000.00</button>
+                <button class="btn shadow py-3 fw-bolder mt-4" onclick="twoThousand()">2000.00</button>
+            </div>
+            <div class="beside d-flex justify-content-between">
+                <div class="butInp">
+                    <input type="text" value="0" class="form-control mt-5" id="amountInput">
+                <button class="btn mt-4 fw-bolder blackBtn text-white" onclick="generateCard()">Generate Card</button>
+                </div>
+                <div class="butInp">
+                    <input type="text" value="*311*Pin#" class="form-control mt-5" id="cardInput" oninput="restrictInput(this)">
+                <button class="btn mt-4 fw-bolder blackBtn text-white" onclick="loadCard()">Load Card</button>
+                </div>
+            </div>
+            <div id="numOutput" class="mt-4"></div>
+        </div>
+    </main>
+    
+</body>
+</html>
+<script>
+    let mtn = document.querySelector('.mtn')
+    let airtel = document.querySelector('.airtel')
+    let glo = document.querySelector('.glo')
+    let nineMobile = document.querySelector('.nineMobile')
+    let output = document.querySelector('.reply')
+    let providerColor = document.querySelector('.providerColor')
+    let providerText = document.querySelector('.providerText')
+    let providerBalance = document.querySelector('.providerBalance')
+    let amountInput = document.getElementById('amountInput')
+    let cardOutput = document.getElementById('numOutput')
+    let database = JSON.parse(localStorage.getItem('cards')) || []
+    let balances = JSON.parse(localStorage.getItem('balances')) || {MTN: 0, Airtel: 0, Glo: 0, "9Mobile": 0,}
+
+
+    let updateBalance = () => {
+        let provider = providerText.innerHTML;
+        providerBalance.innerHTML = `Balance: N${balances[provider]}`;
+    }
+
+
+    let changeMtn = () => {
+        output.style.display = "block"
+        providerColor.style.backgroundColor = "rgb(255,203,6)"
+        providerText.innerHTML = "MTN"
+        updateBalance()
+    }
+
+    let changeAirtel = () => {
+        output.style.display = "block"
+        providerColor.style.backgroundColor = "red"
+        providerText.innerHTML = "Airtel"
+        updateBalance()
+    }
+
+    let changeGlo = () => {
+        output.style.display = "block"
+        providerColor.style.backgroundColor = "green"
+        providerText.innerHTML = "Glo"
+        updateBalance()
+    }
+
+    let changeMobile = () => {
+        output.style.display = "block"
+        providerColor.style.backgroundColor = "black"
+        providerText.innerHTML = "9Mobile"
+        updateBalance()
+    }
+
+
+    let fifty = () => {
+        amountInput.value = Number(amountInput.value) +  50
+    }
+    let hundred = () => {
+        amountInput.value = Number(amountInput.value) +  100
+    }
+    let twoHundred = () => {
+        amountInput.value = Number(amountInput.value) +  200
+    }
+    let fiveHundred = () => {
+        amountInput.value = Number(amountInput.value) +  500
+    }
+    let oneThousand = () => {
+        amountInput.value = Number(amountInput.value) +  1000
+    }
+    let twoThousand = () => {
+        amountInput.value = Number(amountInput.value) +  2000
+    }
+
+    let restrictInput = (inputElement) => {
+        if (inputElement.value.length > 17) {
+            inputElement.value = inputElement.value.slice(0, 18)
+        }
+    }
+
+    let generateCard = () => {
+        if (amountInput.value === "0" || amountInput.value === "") {
+            numOutput.innerHTML = `<h4 class="text-danger fw-bolder">No Amount !</h4>`
+        } else {
+            numOutput.innerHTML = ""
+            let myPin = ''
+            for (let index = 0; index < 12; index++) {
+                let randomNum = Math.floor(Math.random() * 10)
+                myPin = myPin + randomNum
+            }
+            numOutput.innerHTML += `
+            <h4 class="text-success fw-bolder">${myPin}</h4>
+            <h4 class="text-success fw-bolder">This is your code for N${amountInput.value} ${providerText.innerHTML} card</h4>
+            `
+            localStorage.setItem('cards' , JSON.stringify(database))
+
+            let cardInfo = 
+                {provider: providerText.innerHTML,
+                amount: amountInput.value,
+                used: false,
+                pin: myPin             
+                }
+            console.log(cardInfo);
+            database.push(cardInfo)
+            console.log(database);
+            
+        }
+    }
+
+    let loadCard = () => {
+        let card = document.getElementById('cardInput').value.trim()
+        console.log(card);
+
+        let cutCard = card.slice(5 , 17)
+        console.log(cutCard);
+        
+        let foundCard = database.find((index) =>{
+            return index.pin === cutCard
+        })
+        console.log(foundCard);
+        
+
+        if (!card) {
+            numOutput.innerHTML = `<h4 class="text-danger fw-bolder">Please fill in the card</h4>`
+        } else if (!card.startsWith('*311*') || !card.endsWith('#')) {
+            numOutput.innerHTML = `<h4 class="text-danger fw-bolder">Invalid Card Format</h4>`
+        } else if(!foundCard) {
+            numOutput.innerHTML = `<h4 class="text-danger fw-bolder">Invalid card</h4>`
+        } else if (foundCard.used === true) {
+            numOutput.innerHTML = `<h4 class="text-danger fw-bolder">This Card has been used</h4>`
+        } else if (providerText.innerHTML !== foundCard.provider) {
+            numOutput.innerHTML = `<h4 class="text-danger fw-bolder">Invalid Service Provider</h4>`
+        }else{
+            numOutput.innerHTML = `<h4 class="text-success fw-bolder">You've successfully loaded N${foundCard.amount} ${foundCard.provider} card</h4>`
+            foundCard.used = true
+            balances[foundCard.provider] += Number(foundCard.amount)
+            updateBalance()
+            localStorage.setItem("cards", JSON.stringify(database))
+            localStorage.setItem("balances", JSON.stringify(balances))
+        }
+    }
+</script>

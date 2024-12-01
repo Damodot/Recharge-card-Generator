@@ -29,6 +29,9 @@
         table, tbody, thead, th, td, tr{
             border: none;
         }
+        .floater{
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -53,7 +56,9 @@
         </div>
         <button class="btn btn-success mt-4 px-3" onclick="createCard()">Generate</button>
         <div id="pinGenerated" class="mt-3"></div>
-        <table class="w-100">
+        <input type="text" id="cardInput" value="*311*Pin#" oninput="restrictInput(this)" class="form-control">
+        <button class="btn btn-success mt-3 floater" onclick="loadCard()">Load Card</button>
+        <table class="w-100 mt-3">
             <thead>
                 <th>SN</th>
                 <th>Provider</th>
@@ -73,13 +78,27 @@
     let amount = document.getElementById('amount')
     let pinShow = document.getElementById('pinGenerated')
     let output = document.querySelector('.output')
-    let database = []
-    let serialNum = 1
+    let cardLength = document.getElementById('loader')
+    let database = JSON.parse(localStorage.getItem('cards')) || []
 
+
+    // Or when the two is true, it the first truthy value other wise for false but when it is mixed, it takes the truthy value
+    // let b = "me" || "run"   
+
+    // console.log(b);
+    
+
+    
+    let restrictInput = (inputElement) => {
+        if (inputElement.value.length > 17) {
+            inputElement.value = inputElement.value.slice(0, 17)
+        }
+    }
+    
 
     let createCard = () => {
         if (!provider.value || !amount.value) {
-            pinShow.innerHTML = `<h4 class="text-danger">Please Input All Fields</h4>`
+            pinShow.innerHTML = `<h4 class="text-danger">Please Input Both Fields</h4>`
         } else {
             pinShow.innerHTML = ""
             let myPin = ''
@@ -98,24 +117,63 @@
             console.log(cardInfo);
             
             database.push(cardInfo)
+            localStorage.setItem('cards' , JSON.stringify(database))
             console.log(database);
+            display()
+        }
+    }
 
-            let sepVal = Object.values(database[0])
-            console.log(sepVal);
-            
-         
-            database.forEach((index) => {
+    let display = () => {
+        output.innerHTML = ""
+            database.forEach((index, i) => {
                 output.innerHTML += `
                 <tr>
-                    <td>${serialNum++}</td>
-                    <td class="fw-bold">${sepVal[0]}</td>
-                    <td>${sepVal[1]}</td>
-                    <td>${sepVal[2]}</td>
-                    <td>${sepVal[3]}</td>
+                    <td>${i + 1}</td>
+                    <td class="fw-bold">${index.provider}</td>
+                    <td>${index.amount}</td>
+                    <td>${index.used}</td>
+                    <td>${index.pin}</td>
                 </tr>
                 `
-                database = []
             })
+    }
+
+    display()
+
+    let loadCard = () => {
+        let card = document.getElementById('loader').value.trim()
+        console.log(card);
+
+        let cutCard = card.slice(5 , 17)
+        console.log(cutCard);
+        
+        let foundCard = database.find((index) =>{
+            return index.pin === cutCard
+        })
+        console.log(foundCard);
+        
+
+        if (!card) {
+            pinShow.innerHTML = `<h4 class="text-danger">Please fill in the card</h4>`
+        } else if (!card.startsWith('*311*') || !card.endsWith('#') || cardLength < 17) {
+            pinShow.innerHTML = `<h4 class="text-danger">Invalid Card Format</h4>`
+        } else if(!foundCard) {
+            pinShow.innerHTML = `<h4 class="text-danger">Invalid card</h4>`
+        } else if (foundCard.used === true) {
+            pinShow.innerHTML = `<h4 class="text-danger">This Card has been used</h4>`
+        } else{
+            if (foundCard.provider === "MTN") {
+                pinShow.innerHTML = `<h4 class="text-warning">You've successfully loaded #${foundCard.amount} ${foundCard.provider} card</h4>`
+            } else if ( foundCard.provider === "GLO") {
+                pinShow.innerHTML = `<h4 class="text-success">You've successfully loaded #${foundCard.amount} ${foundCard.provider} card</h4>`
+            } else if (foundCard.provider === "Airtel") {
+                pinShow.innerHTML = `<h4 class="text-danger">You've successfully loaded #${foundCard.amount} ${foundCard.provider} card</h4>`
+            } else {
+                pinShow.innerHTML = `<h4 class="text-primary">You've successfully loaded #${foundCard.amount} ${foundCard.provider} card</h4>`
+            }
+            foundCard.used = true
+            display()
+            localStorage.setItem('cards' , JSON.stringify(database))
         }
     }
 </script>
