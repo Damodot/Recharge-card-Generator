@@ -13,22 +13,6 @@
         h1{
             font-size: 40px;
         } 
-        section button{
-            width: 15%;
-            aspect-ratio: 1 / 1;
-            margin: 0 10px;
-            border-radius: 10px;
-            overflow: hidden;
-        }    
-        section img{
-            width: 100%;   
-            aspect-ratio: 1 / 1;
-            z-index: 1;
-        }
-        section button:hover img{
-            transform: scale(1.2);
-            transition: transform 0.4s ease;
-        }
         h1{
             color: black;
         }
@@ -45,6 +29,9 @@
         .priceBtn button{
             width: 30%;
         }
+        .priceBtn button:hover{
+            background-color: rgb(220, 219, 219);
+        }
         .blackBtn{
             background-color: black;
         }
@@ -57,6 +44,27 @@
         .reply{
             display: none;
         }
+        section button {
+            width: 15%;
+            aspect-ratio: 1 / 1;
+            margin: 0 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        section button:hover {
+            transform: scale(1.1);
+            transition: transform 0.4s ease;
+        }    
+        section img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            z-index: 1;
+        }
+        section button:hover img {
+            transform: scale(1.2);
+            transition: transform 0.4s ease;
+        }
+
     </style>
 </head>
 <body>
@@ -78,16 +86,16 @@
         </section>
         <div class="reply w-100 mt-5">
             <div class="yellow providerColor d-flex justify-content-between">
-                <h3 class="text-white fw-bolder fs-3 ms-4 providerBalance"></h3>
-                <h3 class="text-white fw-bolder fs-3 me-4 providerText"></h3>
+                <h3 class="text-white fw-bolder fs-3 ms-4 mt-2 providerBalance"></h3>
+                <h3 class="text-white fw-bolder fs-3 me-4 mt-2 providerText"></h3>
             </div>
             <div class="priceBtn w-100 mt-4 d-flex flex-wrap justify-content-between">
-                <button class="btn shadow py-3 fw-bolder" onclick="fifty()">50.00</button>
-                <button class="btn shadow py-3 fw-bolder" onclick="hundred()">100.00</button>
-                <button class="btn shadow py-3 fw-bolder" onclick="twoHundred()">200.00</button>
-                <button class="btn shadow py-3 fw-bolder mt-4" onclick="fiveHundred()">500.00</button>
-                <button class="btn shadow py-3 fw-bolder mt-4" onclick="oneThousand()">1000.00</button>
-                <button class="btn shadow py-3 fw-bolder mt-4" onclick="twoThousand()">2000.00</button>
+                <button class="btn shadow py-4 fw-bolder" onclick="fifty()">50.00</button>
+                <button class="btn shadow py-4 fw-bolder" onclick="hundred()">100.00</button>
+                <button class="btn shadow py-4 fw-bolder" onclick="twoHundred()">200.00</button>
+                <button class="btn shadow py-4 fw-bolder mt-4" onclick="fiveHundred()">500.00</button>
+                <button class="btn shadow py-4 fw-bolder mt-4" onclick="oneThousand()">1000.00</button>
+                <button class="btn shadow py-4 fw-bolder mt-4" onclick="twoThousand()">2000.00</button>
             </div>
             <div class="beside d-flex justify-content-between">
                 <div class="butInp">
@@ -117,15 +125,14 @@
     let amountInput = document.getElementById('amountInput')
     let cardOutput = document.getElementById('numOutput')
     let database = JSON.parse(localStorage.getItem('cards')) || []
-    let balances = JSON.parse(localStorage.getItem('balances')) || {MTN: 0, Airtel: 0, Glo: 0, "9Mobile": 0,}
+    let balances = JSON.parse(localStorage.getItem('balances')) || {MTN: 0, Airtel: 0, GLO: 0, "9Mobile": 0,}
 
 
     let updateBalance = () => {
         let provider = providerText.innerHTML;
         providerBalance.innerHTML = `Balance: N${balances[provider]}`;
     }
-
-
+    
     let changeMtn = () => {
         output.style.display = "block"
         providerColor.style.backgroundColor = "rgb(255,203,6)"
@@ -143,7 +150,7 @@
     let changeGlo = () => {
         output.style.display = "block"
         providerColor.style.backgroundColor = "green"
-        providerText.innerHTML = "Glo"
+        providerText.innerHTML = "GLO"
         updateBalance()
     }
 
@@ -181,7 +188,7 @@
     }
 
     let generateCard = () => {
-        if (amountInput.value === "0" || amountInput.value === "") {
+        if (amountInput.value.trim() === "0" || amountInput.value.trim() === "") {
             numOutput.innerHTML = `<h4 class="text-danger fw-bolder">No Amount !</h4>`
         } else {
             numOutput.innerHTML = ""
@@ -237,6 +244,9 @@
             foundCard.used = true
             balances[foundCard.provider] += Number(foundCard.amount)
             updateBalance()
+            amountInput.value = "0"
+            console.log(balances);
+            
             localStorage.setItem("cards", JSON.stringify(database))
             localStorage.setItem("balances", JSON.stringify(balances))
         }
