@@ -64,7 +64,18 @@
             transform: scale(1.2);
             transition: transform 0.4s ease;
         }
-
+        table, thead, th, tbody, td, tr{
+            border: none;
+        }
+        .usedbtn button{
+            background-color: black;
+        }
+        .usedbtn button:hover{
+            background-color: rgb(69, 69, 69);
+        }
+        .floater{
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -103,11 +114,28 @@
                 <button class="btn mt-4 fw-bolder blackBtn text-white" onclick="generateCard()">Generate Card</button>
                 </div>
                 <div class="butInp">
-                    <input type="text" value="*311*Pin#" class="form-control mt-5" id="cardInput" oninput="restrictInput(this)">
-                <button class="btn mt-4 fw-bolder blackBtn text-white" onclick="loadCard()">Load Card</button>
+                    <input type="text" value="*311*Pin#" class="form-control mt-5" id="cardInput" oninput="restrictInput()">
+                    <button class="btn mt-4 fw-bolder blackBtn text-white floater" onclick="loadCard()">Load Card</button>
                 </div>
             </div>
             <div id="numOutput" class="mt-4"></div>
+            <div class="table w-100 mt-4">
+                <div class="usedbtn d-flex justify-content-between">
+                    <button class="btn text-white fw-bolder" onclick="display(database)">All Cards</button class="btn">
+                    <button class="btn text-white fw-bolder" onclick="display(usedCards)">Used Cards</button>
+                    <button class="btn text-white fw-bolder" onclick="display(unUsedCards)">Unused Cards</button>
+                </div>
+                <table class="w-100 mt-4">
+                    <thead>
+                        <th class="text-center">SN</th>
+                        <th class="text-center">Provider</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Used</th>
+                        <th class="text-center">Pin</th>
+                    </thead>
+                    <tbody class="pinOutput"></tbody>
+                </table>
+            </div>
         </div>
     </main>
     
@@ -124,13 +152,15 @@
     let providerBalance = document.querySelector('.providerBalance')
     let amountInput = document.getElementById('amountInput')
     let cardOutput = document.getElementById('numOutput')
-    let database = JSON.parse(localStorage.getItem('cards')) || []
+    let database = JSON.parse(localStorage.getItem('card')) || []
     let balances = JSON.parse(localStorage.getItem('balances')) || {MTN: 0, Airtel: 0, GLO: 0, "9Mobile": 0,}
+    let pinOutput = document.querySelector('.pinOutput')
+    let cardInput = document.getElementById("cardInput")
 
 
     let updateBalance = () => {
-        let provider = providerText.innerHTML;
-        providerBalance.innerHTML = `Balance: N${balances[provider]}`;
+        let provider = providerText.innerHTML
+        providerBalance.innerHTML = `Balance: N${balances[provider]}`
     }
     
     let changeMtn = () => {
@@ -181,13 +211,39 @@
         amountInput.value = Number(amountInput.value) +  2000
     }
 
-    let restrictInput = (inputElement) => {
-        if (inputElement.value.length > 17) {
-            inputElement.value = inputElement.value.slice(0, 18)
+    let restrictInput = () => {
+        if (cardInput.value.length > 17) {
+            cardInput.value = cardInput.value.slice(0, 18)
         }
     }
 
+    let display = (arr) => {
+        pinOutput.innerHTML = ""
+            arr.forEach((index, i) => {
+                pinOutput.innerHTML += `
+                <tr class="mt-2">
+                    <td class="text-center">${i + 1}</td>
+                    <td class="fw-bold text-center">${index.provider}</td>
+                    <td class="text-center">${index.amount}</td>
+                    <td class="text-center">${index.used}</td>
+                    <td class="text-center">${index.pin}</td>
+                </tr>
+                `
+            })
+            localStorage.setItem('card' , JSON.stringify(database))
+            localStorage.setItem("balances", JSON.stringify(balances))
+    }
+
+    display(database)
+
+    let usedCards = database.filter((arr) => arr.used === true)
+    let unUsedCards = database.filter((arr) => arr.used === false)
+
     let generateCard = () => {
+        console.log(display(usedCards));
+        console.log(unUsedCards);
+        
+        
         if (amountInput.value.trim() === "0" || amountInput.value.trim() === "") {
             numOutput.innerHTML = `<h4 class="text-danger fw-bolder">No Amount !</h4>`
         } else {
@@ -201,7 +257,7 @@
             <h4 class="text-success fw-bolder">${myPin}</h4>
             <h4 class="text-success fw-bolder">This is your code for N${amountInput.value} ${providerText.innerHTML} card</h4>
             `
-            localStorage.setItem('cards' , JSON.stringify(database))
+    
 
             let cardInfo = 
                 {provider: providerText.innerHTML,
@@ -212,7 +268,11 @@
             console.log(cardInfo);
             database.push(cardInfo)
             console.log(database);
-            
+            display(unUsedCards)
+            display(database)
+            display(usedCards)
+            localStorage.setItem('card' , JSON.stringify(database))
+            localStorage.setItem("balances", JSON.stringify(balances))
         }
     }
 
@@ -245,9 +305,12 @@
             balances[foundCard.provider] += Number(foundCard.amount)
             updateBalance()
             amountInput.value = "0"
+            display(database)
+            display(usedCards)
+            display(unUsedCards)
             console.log(balances);
             
-            localStorage.setItem("cards", JSON.stringify(database))
+            localStorage.setItem("card", JSON.stringify(database))
             localStorage.setItem("balances", JSON.stringify(balances))
         }
     }

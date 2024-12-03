@@ -80,6 +80,10 @@
     let output = document.querySelector('.output')
     let cardLength = document.getElementById('loader')
     let database = JSON.parse(localStorage.getItem('cards')) || []
+    let mtnBal = localStorage.getItem('mtnBal') || 0
+    let airtelBal = localStorage.getItem('airtelBal') || 0
+    let gloBal = localStorage.getItem('gloBal') || 0
+    let mobileBal = localStorage.getItem('mobileBal') || 0
 
 
     // Or when the two is true, it the first truthy value other wise for false but when it is mixed, it takes the truthy value
@@ -88,6 +92,9 @@
     // console.log(b);
     
 
+    // let addbalance = () => {
+
+    // }
     
     let restrictInput = (inputElement) => {
         if (inputElement.value.length > 17) {
